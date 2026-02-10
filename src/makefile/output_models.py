@@ -93,3 +93,25 @@ class VulnAwareRefinerResponse(BaseModel):
             "num_loop_unwindings_set": self.num_loop_unwindings_set,
             "updated_makefile": self.updated_makefile
         }
+
+class ValidationAssessmentResponse(BaseModel):
+    call_trace: list[str]
+    variable_origin_lines_of_code: str
+    previous_engineer_review: str
+    agree_with_prev_engineer: bool
+    vuln_context: str
+    ease_of_exploitation: str
+    impact: str
+    threat_score: int
+
+    def to_dict(self):
+        return {
+            "call_trace": self.call_trace,
+            "var_origin": self.variable_origin_lines_of_code,
+            "validation_review": self.previous_engineer_review,
+            "violation_is_correct": self.agree_with_prev_engineer,
+            "vuln_context": self.vuln_context,
+            "ease_of_exploitation": self.ease_of_exploitation,
+            "vuln_impact": self.impact,
+            "threat_score": self.threat_score
+        }

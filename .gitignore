@@ -17,3 +17,4 @@ tools.sif
 tests/report
 tests/rank
 run_tests.out
+violation_assessments.json

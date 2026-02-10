@@ -28,6 +28,7 @@ from vuln_aware_refiner.vuln_aware_refiner import VulnAwareRefiner
 from stub_generator.gen_function_stubs import StubGenerator
 from commons.models import Generable
 from validator.precondition_validator import PreconditionValidator
+from validator.violation_reviewer import ViolationReviewer
 
 
 # Global project container
@@ -41,7 +42,15 @@ def get_parser():
     )
     parser.add_argument(
         "mode",
-        choices=["harness", "debugger", "function-stubs", "function-pointers", "coverage", "vuln-aware", "precondition", "all"],
+        choices=[
+            "harness",
+            "debugger",
+            "function-stubs", "function-pointers",
+            "coverage", "vuln-aware",
+            "precondition",
+            "review",
+            "all",
+        ],
         help=(
             "Execution mode: "
             "'harness' to generate harness/makefile, "
@@ -49,10 +58,10 @@ def get_parser():
             "'function-stubs' to run function stub generator, "
             "'function-pointers' to run function pointer handler, "
             "'coverage' to run coverage debugger, "
-            "'vuln-aware' to run vulnerability-aware harness refiner, "
-            "'precondition' to run precondition validator, or "
+            "'precondition' to run precondition validator, "
+            "'review' to run violation reviewer, or "
             "'all' to run all 'harness', 'debugger' and 'coverage' modes sequentially."
-        )
+        ),
     )
     parser.add_argument(
         "--target_function_name",
@@ -143,6 +152,11 @@ def process_mode(args):
             args=args,
             project_container=project_container
         ))
+    if args.mode in ["review"]:
+        agents.append(ViolationReviewer(
+            args=args,
+            project_container=project_container
+        ))
 
     for agent in agents:
         start_time = time.perf_counter()
@@ -219,7 +233,7 @@ def main():
     except Exception as e:
         logger.error(f"Error initializing Project container: {e}")
         return
-    
+
     process_mode(args)
 
     if args.metrics_file:
